@@ -1,0 +1,243 @@
+<!-- index.html (UPGRADED — EXTREME ANIMATIONS + TRANSITIONS + INTERACTIONS)
+Place this at your project root and make sure css/index.css is at css/index.css -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Atlas Manager Hub — Ultra</title>
+  <link rel="stylesheet" href="css/index.css" />
+</head>
+<body>
+  <!-- interactive particle canvas (behind UI) -->
+  <canvas id="bg-canvas" class="bg-canvas" aria-hidden="true"></canvas>
+
+  <!-- navigation (subtle glass) -->
+  <nav class="nav">
+    <div class="nav-left">
+      <div class="logo" id="logo">Atlas<span>Tools</span></div>
+    </div>
+    <div class="nav-center">
+      <a href="textureatlas.html" class="nav-link">TextureAtlas (JSON)</a>
+      <a href="spritesheet.html" class="nav-link">SpriteSheet (XML)</a>
+    </div>
+    <div class="nav-right">
+      <button id="themeBtn" class="btn btn-ghost">Theme</button>
+      <button id="introBtn" class="btn btn-primary">Launch</button>
+    </div>
+  </nav>
+
+  <!-- cinematic hero area -->
+  <header class="hero" id="hero">
+    <div class="hero-inner">
+      <h1 class="hero-title">Atlas Manager</h1>
+      <p class="hero-sub">Powerful sprite extraction, zero squish — export exact pixels, instantly.</p>
+
+      <div class="cards-row" id="cardsRow">
+        <a href="textureatlas.html" class="card card-tilt" data-card="json">
+          <div class="card-ornament"></div>
+          <div class="card-body">
+            <h3>TextureAtlas JSON</h3>
+            <p class="muted">PNG + JSON — rename, reorder, export updated maps</p>
+            <div class="card-meta">
+              <span class="chip">Drag & Drop</span>
+              <span class="chip">ZIP export</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="spritesheet.html" class="card card-tilt" data-card="xml">
+          <div class="card-ornament"></div>
+          <div class="card-body">
+            <h3>SpriteSheet XML</h3>
+            <p class="muted">PNG + XML — exact frame extraction, renamed & exported</p>
+            <div class="card-meta">
+              <span class="chip">SubTexture</span>
+              <span class="chip">Exact pixels</span>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div class="cta-row">
+        <a href="textureatlas.html" class="cta cta-left">Open JSON Manager</a>
+        <a href="spritesheet.html" class="cta cta-right">Open XML Manager</a>
+      </div>
+    </div>
+
+    <!-- animated floating lights -->
+    <ul class="floaters" aria-hidden="true">
+      <li style="--i:0;"></li><li style="--i:1;"></li><li style="--i:2;"></li>
+      <li style="--i:3;"></li><li style="--i:4;"></li><li style="--i:5;"></li>
+    </ul>
+  </header>
+
+  <footer class="foot">
+    <div>Built for creators — pixel-perfect extraction • <strong>No squish</strong></div>
+  </footer>
+
+  <!-- interaction script (parallax, particles, tilt, shockwave, transitions) -->
+  <script>
+  /* index interactions — keep in index.html for easy copy/paste */
+  (function () {
+    // Elements
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d', { alpha: true });
+    const cards = Array.from(document.querySelectorAll('.card-tilt'));
+    const hero = document.getElementById('hero');
+    const logo = document.getElementById('logo');
+    const themeBtn = document.getElementById('themeBtn');
+    const introBtn = document.getElementById('introBtn');
+    const cardsRow = document.getElementById('cardsRow');
+
+    // Resize canvas
+    function resize() {
+      canvas.width = innerWidth;
+      canvas.height = innerHeight;
+    }
+    addEventListener('resize', resize);
+    resize();
+
+    // PARTICLES
+    const particles = [];
+    const PARTICLE_COUNT = Math.max(24, Math.floor(innerWidth / 60));
+    function rand(min, max){return Math.random()*(max-min)+min;}
+    for (let i=0;i<PARTICLE_COUNT;i++){
+      particles.push({
+        x: rand(0, canvas.width),
+        y: rand(0, canvas.height),
+        vx: rand(-0.15,0.15),
+        vy: rand(-0.05,0.05),
+        r: rand(8,36),
+        hue: rand(180,320),
+        life: rand(60,240),
+        amp: rand(0.4,1.2)
+      });
+    }
+    let t = 0;
+    function drawParticles() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      t += 0.01;
+      for (let p of particles){
+        p.x += p.vx * (1 + Math.sin(t*p.amp));
+        p.y += p.vy * (1 + Math.cos(t*p.amp));
+        p.life--;
+        if (p.x < -100) p.x = canvas.width + 100;
+        if (p.x > canvas.width + 100) p.x = -100;
+        if (p.y < -100) p.y = canvas.height + 100;
+        if (p.y > canvas.height + 100) p.y = -100;
+        const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+        g.addColorStop(0, `hsla(${p.hue},90%,65%,${0.12 * p.amp})`);
+        g.addColorStop(0.5, `hsla(${p.hue+40},80%,55%,${0.06 * p.amp})`);
+        g.addColorStop(1, `rgba(10,10,10,0)`);
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+        ctx.fill();
+        if (p.life < 0) {
+          p.x = rand(0, canvas.width); p.y = rand(0, canvas.height);
+          p.vx = rand(-0.15,0.15); p.vy = rand(-0.05,0.05); p.r = rand(6,38); p.life = rand(60,240);
+        }
+      }
+      requestAnimationFrame(drawParticles);
+    }
+    drawParticles();
+
+    // PARALLAX (mouse move)
+    let mouseX = 0, mouseY = 0;
+    window.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / innerWidth - 0.5) * 2; // -1..1
+      mouseY = (e.clientY / innerHeight - 0.5) * 2;
+      // subtle hero parallax
+      hero.style.transform = `translate3d(${mouseX * 8}px, ${mouseY * 6}px, 0)`;
+      // logo tilt
+      logo.style.transform = `translateZ(0) rotateY(${mouseX * 6}deg) rotateX(${-mouseY * 4}deg)`;
+    });
+
+    // 3D tilt for cards (requestAnimationFrame smoothing)
+    cards.forEach(card => {
+      card.addEventListener('mousemove', (ev) => {
+        const rect = card.getBoundingClientRect();
+        const cx = rect.left + rect.width/2;
+        const cy = rect.top + rect.height/2;
+        const dx = ev.clientX - cx;
+        const dy = ev.clientY - cy;
+        const px = dx / rect.width;
+        const py = dy / rect.height;
+        const rx = -py * 10;
+        const ry = px * 12;
+        card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(8px) scale(1.02)`;
+        card.style.boxShadow = `${-ry*2}px ${rx*2}px 40px rgba(0,0,0,0.45), 0 10px 40px rgba(0,0,0,0.25)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+        card.style.boxShadow = '';
+      });
+      // click shockwave animation
+      card.addEventListener('click', (ev) => {
+        const r = document.createElement('div');
+        r.className = 'shockwave';
+        const rect = card.getBoundingClientRect();
+        r.style.left = (ev.clientX - rect.left) + 'px';
+        r.style.top = (ev.clientY - rect.top) + 'px';
+        card.appendChild(r);
+        setTimeout(()=> r.remove(), 900);
+      });
+    });
+
+    // theme toggle: toggles class on body with smooth transitions
+    themeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('alt-theme');
+      // brief flash
+      document.body.animate([{filter:'brightness(1.2)'},{filter:'brightness(1)'}], {duration:420});
+    });
+
+    // cinematic launch: staggered animations & tilt intensity
+    introBtn.addEventListener('click', () => {
+      document.body.classList.add('launched');
+      cardsRow.querySelectorAll('.card-tilt').forEach((c,i)=>{
+        c.animate([{transform:'translateY(40px) scale(.94)', opacity:0},{transform:'translateY(0) scale(1)', opacity:1}], {delay: i*120, duration:600, easing:'cubic-bezier(.2,.9,.3,1)'});
+      });
+      // slightly intensify particles for a moment
+      particles.forEach(p => { p.vx *= 1.6; p.vy *= 1.3; });
+      setTimeout(()=> {
+        particles.forEach(p => { p.vx *= 0.6; p.vy *= 0.8; });
+      }, 1200);
+    });
+
+    // keyboard quick access
+    window.addEventListener('keydown', (e) => {
+      if (e.key === '1') location.href = 'textureatlas.html';
+      if (e.key === '2') location.href = 'spritesheet.html';
+      if (e.key === 't') themeBtn.click();
+    });
+
+    // accessibility: reduce motion if user prefers
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (mq.matches) {
+      document.body.classList.add('reduced-motion');
+    }
+
+    // small helper: animate floating ornaments a bit more on hover
+    document.querySelectorAll('.card-tilt').forEach(c => {
+      c.addEventListener('mouseenter', () => c.classList.add('hovered'));
+      c.addEventListener('mouseleave', () => c.classList.remove('hovered'));
+    });
+
+    // ripple on nav link click
+    document.querySelectorAll('.nav-link, .cta').forEach(el => {
+      el.addEventListener('click', (ev) => {
+        const a = document.createElement('span');
+        a.className = 'nav-ripple';
+        el.appendChild(a);
+        const rect = el.getBoundingClientRect();
+        a.style.left = (ev.clientX - rect.left) + 'px';
+        a.style.top = (ev.clientY - rect.top) + 'px';
+        setTimeout(()=> a.remove(), 700);
+      })
+    });
+
+  })();
+  </script>
+</body>
+</html>

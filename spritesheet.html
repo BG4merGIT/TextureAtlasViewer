@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SpriteSheet (XML) Manager</title>
+  <link rel="stylesheet" href="css/spritesheet.css" />
+</head>
+<body>
+  <nav class="topnav">
+    <div class="brand">Atlas Tools</div>
+    <div class="links">
+      <a href="index.html">Home</a>
+      <a href="textureatlas.html">TextureAtlas (JSON)</a>
+      <a class="active" href="spritesheet.html">SpriteSheet (XML)</a>
+    </div>
+    <div class="actions">
+      <button id="themeToggleXml">Toggle Theme</button>
+    </div>
+  </nav>
+
+  <main class="page">
+    <section class="upload-panel">
+      <div class="u-left">
+        <h2>Upload PNG & XML</h2>
+        <p>Drag & drop PNGs and XMLs anywhere on the page, or use the file pickers below.</p>
+        <div class="inputs">
+          <input id="atlasXMLInput" type="file" accept=".png" multiple />
+          <label for="atlasXMLInput" class="pick">Choose PNGs</label>
+
+          <input id="xmlInput" type="file" accept=".xml,text/xml" multiple />
+          <label for="xmlInput" class="pick">Choose XMLs</label>
+        </div>
+      </div>
+
+      <div class="u-right">
+        <div class="hint">Notes</div>
+        <ul>
+          <li>Supports common SubTexture-based XML (TexturePacker/Adobe outputs).</li>
+          <li>Rename, reorder sprites, export updated XML, and download exact-size PNGs.</li>
+        </ul>
+        <div class="file-stats" id="xmlStats">No atlases loaded</div>
+      </div>
+    </section>
+
+    <section id="xmlAtlasListContainer" class="atlas-list-wrapper"></section>
+
+    <section class="main-grid">
+      <aside class="left-pane">
+        <div class="controls">
+          <input id="xml-search" placeholder="Search sprites..." />
+          <button id="xml-export-map">Export Updated XML</button>
+          <button id="xml-download-all">Download All (ZIP)</button>
+        </div>
+        <div id="spritesXMLContainer" class="sprites-grid"></div>
+      </aside>
+
+      <section class="preview-pane">
+        <div class="preview-toolbar">
+          <label>Zoom <input id="xml-zoom" type="range" min="0.25" max="6" step="0.05" value="2" /></label>
+          <button id="xml-prev">◀</button>
+          <button id="xml-next">▶</button>
+          <input id="renameXMLInput" placeholder="Rename selected" />
+          <button id="renameXMLBtn">Rename</button>
+          <button id="xml-download-one">Download Selected</button>
+        </div>
+        <div class="preview-area">
+          <canvas id="xmlPreviewCanvas" width="640" height="640"></canvas>
+          <div id="xmlMeta" class="meta"></div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="js/spritesheet.js"></script>
+</body>
+</html>

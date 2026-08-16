@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TextureAtlas (JSON) Manager</title>
+  <link rel="stylesheet" href="css/textureatlas.css" />
+</head>
+<body>
+  <nav class="topnav">
+    <div class="brand">Atlas Tools</div>
+    <div class="links">
+      <a href="index.html">Home</a>
+      <a class="active" href="textureatlas.html">TextureAtlas (JSON)</a>
+      <a href="spritesheet.html">SpriteSheet (XML)</a>
+    </div>
+    <div class="actions">
+      <button id="themeToggle">Toggle Theme</button>
+    </div>
+  </nav>
+
+  <main class="page">
+    <section class="upload-panel">
+      <div class="u-left">
+        <h2>Upload PNG(s) & JSON(s)</h2>
+        <p>Drag & drop PNGs and JSON files anywhere on the page, or use the file pickers below.</p>
+        <div class="inputs">
+          <input id="atlasJSONInput" type="file" accept=".png" multiple />
+          <label for="atlasJSONInput" class="pick">Choose PNGs</label>
+
+          <input id="jsonInput" type="file" accept=".json,application/json" multiple />
+          <label for="jsonInput" class="pick">Choose JSONs</label>
+        </div>
+      </div>
+
+      <div class="u-right">
+        <div class="hint">Tips</div>
+        <ul>
+          <li>Match files by base name (spritemap1.png ↔ spritemap1.json) or JSON meta.image.</li>
+          <li>Rename sprites, reorder them, and export updated JSON.</li>
+          <li>Downloaded sprites keep original pixel sizes (no squishing).</li>
+        </ul>
+        <div class="file-stats" id="jsonStats">No atlases loaded</div>
+      </div>
+    </section>
+
+    <section id="atlasListContainer" class="atlas-list-wrapper">
+      <!-- JS injects atlas list here -->
+    </section>
+
+    <section class="main-grid">
+      <aside id="leftPane" class="left-pane">
+        <!-- search + small controls -->
+        <div class="controls">
+          <input id="json-search" placeholder="Search sprites..." />
+          <button id="json-export-map">Export Updated JSON</button>
+          <button id="json-download-all">Download All (ZIP)</button>
+        </div>
+
+        <div id="spritesJSONContainer" class="sprites-grid" aria-live="polite"></div>
+      </aside>
+
+      <section class="preview-pane">
+        <div class="preview-toolbar">
+          <button id="json-prev">◀</button>
+          <button id="json-next">▶</button>
+          <label>Zoom <input id="json-zoom" type="range" min="0.25" max="6" step="0.05" value="2" /></label>
+          <input id="renameJSONInput" placeholder="Rename selected" />
+          <button id="renameJSONBtn">Rename</button>
+          <button id="json-download-one">Download Selected</button>
+        </div>
+
+        <div class="preview-area">
+          <canvas id="jsonPreviewCanvas" width="640" height="640"></canvas>
+          <div id="jsonMeta" class="meta"></div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="js/textureatlas.js"></script>
+</body>
+</html>
